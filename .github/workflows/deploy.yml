@@ -27,7 +27,10 @@ jobs:
       - name: Deploy ELK to EC2
         run: |
           ssh ec2-user@${{ secrets.MONITORING_HOST }} << 'EOF'
-            cd ~/monitoring
+            cd ~
+            rm -rf monitoring
+            git clone https://github.com/pintoss-backend/monitoring.git
+            cd monitoring
             docker-compose down -v || true
             docker-compose up -d
           EOF
