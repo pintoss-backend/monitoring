@@ -25,10 +25,9 @@ services:
     depends_on:
       - elasticsearch
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=pintoss
-      - xpack.security.enabled=true
+    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    - ELASTICSEARCH_SERVICEACCOUNTTOKEN=${ELASTICSEARCH_SERVICEACCOUNTTOKEN}
+    - xpack.security.enabled=true
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.7.1
