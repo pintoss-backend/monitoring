@@ -7,6 +7,8 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=true
+      - ELASTIC_PASSWORD=pintoss
       - ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.skip_remaining_syscall_checks=true
     ports:
       - "9200:9200"
