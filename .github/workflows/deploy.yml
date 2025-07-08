@@ -42,9 +42,9 @@ jobs:
 
             echo "⏳ Elasticsearch 기동 대기..."
             sleep 30
-            
+
             echo "🔐 Kibana 서비스 토큰 생성"
-            TOKEN=$(docker exec elasticsearch bin/elasticsearch-service-tokens create kibana kibana-server)
+            TOKEN=$(docker exec elasticsearch bin/elasticsearch-service-tokens create elastic/kibana kibana-server)
             echo "✅ 생성된 토큰: $TOKEN"
 
             echo "📄 .env 파일 저장"
