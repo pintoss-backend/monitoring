@@ -10,8 +10,6 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_SERVICEACCOUNTTOKEN=${ELASTICSEARCH_SERVICEACCOUNTTOKEN}
       - xpack.security.enabled=true
-    depends_on:
-      - elasticsearch
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.11.4
