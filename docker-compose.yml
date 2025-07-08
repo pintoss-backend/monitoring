@@ -14,8 +14,6 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:8.11.4
     container_name: logstash
-    depends_on:
-      - elasticsearch
     ports:
       - "5044:5044"
       - "5001:5000"
