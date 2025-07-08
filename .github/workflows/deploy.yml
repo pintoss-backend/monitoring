@@ -42,20 +42,14 @@ jobs:
 
             echo "⏳ Elasticsearch 기동 대기..."
             sleep 30
+            
+            echo "🔐 Kibana 서비스 토큰 생성"
+            TOKEN=$(docker exec elasticsearch bin/elasticsearch-service-tokens create kibana kibana-server)
+            echo "✅ 생성된 토큰: $TOKEN"
 
-            echo "🔐 Kibana용 서비스 토큰 생성"
-            SERVICE_TOKEN=\$(docker exec elasticsearch bin/elasticsearch-service-tokens create kibana kibana-server)
-            echo "✅ 생성된 토큰: \$SERVICE_TOKEN"
+            echo "📄 .env 파일 저장"
+            echo "ELASTICSEARCH_SERVICEACCOUNTTOKEN=$TOKEN" > .env
 
-            echo "🔧 Kibana 환경변수 삽입"
-            echo "  ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$SERVICE_TOKEN" >> .env
-
-            echo "🚀 Kibana 실행"
-            docker-compose up -d kibana
-
-
-            echo "🚀 Logstash 실행"
-            docker-compose up -d logstash
-
-            echo "✅ 모든 서비스 실행 완료 (Elasticsearch + Kibana + Logstash)"
+            echo "🚀 Kibana + Logstash 실행"
+            docker-compose up -d kibana logstash
           EOF
