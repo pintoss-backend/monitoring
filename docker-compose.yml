@@ -1,43 +1,27 @@
 version: '3.8'
 
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=true
-      - xpack.security.enrollment.enabled=false
-      - xpack.security.http.ssl.enabled=false
-      - xpack.security.transport.ssl.enabled=false
-      - ELASTIC_PASSWORD=pintoss
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.skip_remaining_syscall_checks=true
-    ports:
-      - "9200:9200"
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.7.1
+    image: docker.elastic.co/kibana/kibana:8.11.4
     container_name: kibana
     ports:
       - "5601:5601"
-    depends_on:
-      - elasticsearch
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_SERVICEACCOUNTTOKEN=${ELASTICSEARCH_SERVICEACCOUNTTOKEN}
       - xpack.security.enabled=true
+    depends_on:
+      - elasticsearch
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.7.1
+    image: docker.elastic.co/logstash/logstash:8.11.4
     container_name: logstash
+    depends_on:
+      - elasticsearch
     ports:
       - "5044:5044"
       - "5001:5000"
       - "9600:9600"
-    depends_on:
-      - elasticsearch
     volumes:
       - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
 
