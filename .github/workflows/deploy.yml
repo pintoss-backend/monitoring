@@ -39,8 +39,16 @@ jobs:
             echo "🚀 Elasticsearch 먼저 실행"
             docker-compose up -d elasticsearch
 
-            echo "⏳ Elasticsearch 기동 대기 중..."
-            sleep 40
+            echo "⏳ Elasticsearch 완전 기동 대기 중..."
+            for i in {1..30}; do
+              STATUS=$(curl -s -u elastic:pintoss http://localhost:9200/_cluster/health | grep -o '"status":"[^"]*"' | cut -d':' -f2 | tr -d '"')
+              if [[ "$STATUS" == "green" || "$STATUS" == "yellow" ]]; then
+                echo "✅ Elasticsearch 상태: $STATUS (기동 완료)"
+                break
+              fi
+              echo "⌛ Elasticsearch 상태: $STATUS (대기 중...)"
+              sleep 5
+            done
 
             echo "🧼 기존 Kibana 서비스 토큰 삭제 시도 (없으면 무시)"
             docker exec elasticsearch bin/elasticsearch-service-tokens delete elastic/kibana kibana-server || true
