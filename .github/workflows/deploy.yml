@@ -38,17 +38,6 @@ jobs:
             echo "🧹 기존 Kibana/Logstash 컨테이너 종료"
             docker compose down || true
 
-            echo "🔐 기존 Kibana 서비스 토큰 삭제 (있다면)"
-            docker exec elasticsearch bin/elasticsearch-service-tokens delete elastic/kibana kibana-server || true
-
-            echo "🔐 Kibana 서비스 토큰 생성"
-            TOKEN=\$(docker exec elasticsearch bin/elasticsearch-service-tokens create elastic/kibana kibana-server | awk '{print \$2}')
-            echo "✅ 생성된 토큰: \$TOKEN"
-
-            echo "📄 .env 파일 저장"
-            echo "ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN" > .env
-
             echo "🚀 Kibana + Logstash 실행"
-            export ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN
-            docker-compose up -d kibana logstash
+            docker-compose up -d logstash
           EOF
