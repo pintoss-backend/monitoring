@@ -6,7 +6,7 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
       - ELASTIC_PASSWORD=pintoss
       - ES_JAVA_OPTS=-Xms512m -Xmx512m -Des.skip_remaining_syscall_checks=true
     ports:
@@ -28,7 +28,7 @@ services:
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
     ports:
       - "5601:5601"
     depends_on:
