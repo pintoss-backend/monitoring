@@ -43,16 +43,19 @@ jobs:
             echo "⏳ Elasticsearch 기동 대기..."
             sleep 30
 
+            echo "🧼 기존 Kibana 서비스 토큰 삭제 (중복 방지)"
+            docker exec elasticsearch bin/elasticsearch-service-tokens delete elastic/kibana kibana-server || true
+
             echo "🔐 Kibana 서비스 토큰 생성"
             TOKEN=$(docker exec elasticsearch bin/elasticsearch-service-tokens create elastic/kibana kibana-server | awk '{print $2}')
-            echo "✅ 생성된 토큰: $TOKEN"
+            echo "✅ 생성된 토큰: \$TOKEN"
 
             echo "📄 .env 파일 저장"
-            echo "ELASTICSEARCH_SERVICEACCOUNTTOKEN=$TOKEN" > .env
+            echo "ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN" > .env
 
-            echo "📦 .env 적용 후 Kibana + Logstash 실행"
-            set -a
-            source .env
-            set +a
+            echo "📦 .env 값 export (환경변수로 적용)"
+            export ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN
+
+            echo "🚀 Kibana + Logstash 실행"
             docker-compose up -d kibana logstash
           EOF
