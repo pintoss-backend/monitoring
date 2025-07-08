@@ -36,7 +36,7 @@ jobs:
             cd monitoring
 
             echo "🧹 기존 Kibana/Logstash 컨테이너 종료"
-            docker compose down || true
+            docker-compose down logstash
 
             echo "🚀 Kibana + Logstash 실행"
             docker-compose up -d logstash
