@@ -26,36 +26,39 @@ jobs:
 
       - name: Deploy ELK to EC2
         run: |
-          ssh ec2-user@${{ secrets.MONITORING_HOST }} << EOF  # ← ❗쿼트 제거됨
-            set -e
+          ssh ec2-user@${{ secrets.MONITORING_HOST }} << EOF 
 
             cd ~
             rm -rf monitoring
             git clone https://github.com/pintoss-backend/monitoring.git
             cd monitoring
 
-            echo "🧹 기존 컨테이너 정리"
+            echo "🧹 기존 컨테이너 종료 및 볼륨 정리"
             docker-compose down -v || true
 
             echo "🚀 Elasticsearch 먼저 실행"
             docker-compose up -d elasticsearch
 
-            echo "⏳ Elasticsearch 기동 대기..."
+            echo "⏳ Elasticsearch 기동 대기 중..."
             sleep 40
 
-            echo "🧼 기존 Kibana 서비스 토큰 삭제 (중복 방지)"
+            echo "🧼 기존 Kibana 서비스 토큰 삭제 시도 (없으면 무시)"
             docker exec elasticsearch bin/elasticsearch-service-tokens delete elastic/kibana kibana-server || true
 
             echo "🔐 Kibana 서비스 토큰 생성"
-            TOKEN=\$(docker exec elasticsearch bin/elasticsearch-service-tokens create elastic/kibana kibana-server | awk '{print \$2}')
-            echo "✅ 생성된 토큰: \$TOKEN"
+            TOKEN=$(docker exec elasticsearch bin/elasticsearch-service-tokens create elastic/kibana kibana-server | awk '{print $2}')
+
+            if [[ -z "$TOKEN" ]]; then
+              echo "❌ 토큰 생성 실패: 토큰 값이 비어 있습니다"
+              exit 1
+            fi
+
+            echo "✅ 토큰 생성 완료: $TOKEN"
 
             echo "📄 .env 파일 저장"
-            echo "ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN" > .env
-
-            echo "📦 .env 값 export (환경변수로 적용)"
-            export ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN
+            echo "ELASTICSEARCH_SERVICEACCOUNTTOKEN=$TOKEN" > .env
 
             echo "🚀 Kibana + Logstash 실행"
+            export ELASTICSEARCH_SERVICEACCOUNTTOKEN=$TOKEN
             docker-compose up -d kibana logstash
           EOF
