@@ -50,5 +50,5 @@ jobs:
 
             echo "🚀 Kibana + Logstash 실행"
             export ELASTICSEARCH_SERVICEACCOUNTTOKEN=\$TOKEN
-            docker compose up -d kibana logstash
+            docker-compose up -d kibana logstash
           EOF
