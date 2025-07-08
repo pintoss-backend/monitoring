@@ -10,6 +10,8 @@ services:
       - ELASTICSEARCH_HOSTS=http://host.docker.internal:9200
       - ELASTICSEARCH_SERVICEACCOUNTTOKEN=${ELASTICSEARCH_SERVICEACCOUNTTOKEN}
       - xpack.security.enabled=true
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"  # EC2에서 반드시 필요
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.11.4
